@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <rect width="200" height="200" rx="32" fill="#0D9488" />
+  <circle cx="100" cy="100" r="70" fill="#ffffff" fill-opacity="0.15" />
+  
+  <!-- Pharmacy Cross & Pill Combination -->
+  <g transform="translate(100, 100)">
+    <!-- Glowing circle backdrop -->
+    <circle cx="0" cy="0" r="46" fill="#ffffff" />
+    
+    <!-- Medical Cross -->
+    <rect x="-10" y="-32" width="20" height="64" rx="6" fill="#0D9488" />
+    <rect x="-32" y="-10" width="64" height="20" rx="6" fill="#0D9488" />
+    
+    <!-- Inner Pill / Graduation Quiz Accent -->
+    <circle cx="0" cy="0" r="12" fill="#0284C7" />
+    <path d="M-6 0 L-2 4 L6 -4" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
