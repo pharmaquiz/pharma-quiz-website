@@ -71,7 +71,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/home.jpg"
-                alt="PHARMA QUIZ Main Dashboard"
+                alt="PharmaFriends Main Dashboard"
                 className="transform hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -84,7 +84,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/home2.jpg"
-                alt="PHARMA QUIZ Subject Interface"
+                alt="PharmaFriends Subject Interface"
                 badgeText="Popular View"
                 className="transform hover:scale-105 transition-transform duration-300 z-10"
               />
@@ -98,7 +98,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/home3.jpg"
-                alt="PHARMA QUIZ Study Hub"
+                alt="PharmaFriends Study Hub"
                 className="transform hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -115,7 +115,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/pharmabattle_matching.jpg"
-                alt="PHARMA QUIZ Battle Matching"
+                alt="PharmaFriends Battle Matching"
                 className="transform hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -128,7 +128,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/pharmabattle.jpg"
-                alt="PHARMA QUIZ Live Battle Game"
+                alt="PharmaFriends Live Battle Game"
                 badgeText="Head-to-Head"
                 className="transform hover:scale-105 transition-transform duration-300 z-10"
               />
@@ -142,7 +142,7 @@ export default function AppShowcase() {
               </div>
               <PhoneMockup
                 screenSrc="/images/app-screenshots/pharmabattel_loading.jpg"
-                alt="PHARMA QUIZ Battle Loading"
+                alt="PharmaFriends Battle Loading"
                 className="transform hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -168,7 +168,7 @@ export default function AppShowcase() {
             <div className="flex justify-center">
               <PhoneMockup
                 screenSrc="/images/app-screenshots/category.jpg"
-                alt="PHARMA QUIZ Categories Screen"
+                alt="PharmaFriends Categories Screen"
                 badgeText="Categories & Topics"
               />
             </div>
@@ -194,7 +194,7 @@ export default function AppShowcase() {
             <div className="flex justify-center">
               <PhoneMockup
                 screenSrc="/images/app-screenshots/pharma_library.jpg"
-                alt="PHARMA QUIZ Digital Library Screen"
+                alt="PharmaFriends Digital Library Screen"
                 badgeText="Digital Library"
               />
             </div>
@@ -220,7 +220,7 @@ export default function AppShowcase() {
             <div className="flex justify-center">
               <PhoneMockup
                 screenSrc="/images/app-screenshots/pharma_chat.jpg"
-                alt="PHARMA QUIZ PharmaChat Screen"
+                alt="PharmaFriends PharmaChat Screen"
                 badgeText="PharmaChat Assistant"
               />
             </div>

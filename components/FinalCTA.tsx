@@ -44,7 +44,7 @@ export default function FinalCTA() {
               <div className="bg-white p-3 rounded-2xl shadow-inner inline-block">
                 <Image
                   src="/images/qr-code.svg"
-                  alt="Download PHARMA QUIZ QR Code"
+                  alt="Download PharmaFriends QR Code"
                   width={150}
                   height={150}
                   className="w-36 h-36 object-contain"

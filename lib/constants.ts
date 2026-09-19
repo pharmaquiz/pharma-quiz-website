@@ -1,13 +1,15 @@
 export const SITE_CONFIG = {
-  brandName: "PHARMA QUIZ",
+  brandName: "PharmaFriends",
   domain: "pharmaquizz.com",
   siteUrl: "https://pharmaquizz.com",
   contactEmail: "admin@pharmaquizz.com",
   playStoreUrl: "https://play.google.com/store/apps/details?id=com.moneykey.pharmaquiz",
-  tagline: "Your Smart Pharmacy Study Companion",
-  description: "PHARMA QUIZ is your smart pharmacy study companion, designed to help pharmacy students practice MCQs, strengthen their knowledge, and prepare confidently for exams.",
+  tagline: "Your Smart Pharmacy Learning & Community Companion",
+  description: "PharmaFriends is your smart pharmacy study and community companion, designed to help pharmacy students practice MCQs, connect with peers, share clinical insights, and prepare confidently for exams.",
   keywords: [
-    "PHARMA QUIZ",
+    "PharmaFriends",
+    "Pharma Quiz",
+    "pharmacy community",
     "pharmacy MCQ",
     "pharmacy quiz",
     "pharmacy students",
@@ -18,7 +20,7 @@ export const SITE_CONFIG = {
     "pharmaceutical chemistry MCQ",
     "hospital pharmacy practice",
     "GPAT preparation",
-    "pharmacy MCQ app"
+    "pharmacy study app"
   ]
 };
 
@@ -140,14 +142,14 @@ export const HOW_IT_WORKS_STEPS = [
   {
     step: "01",
     title: "Download",
-    subtitle: "Download PHARMA QUIZ",
-    description: "Get the official PHARMA QUIZ app from Google Play directly onto your Android device."
+    subtitle: "Download PharmaFriends",
+    description: "Get the official PharmaFriends app from Google Play directly onto your Android device."
   },
   {
     step: "02",
-    title: "Practice",
-    subtitle: "Select Subject & Practice",
-    description: "Choose your subject and start practicing MCQs at your own comfortable pace."
+    title: "Practice & Connect",
+    subtitle: "Select Subject & Explore Feed",
+    description: "Practice MCQs at your own pace, connect with pharmacy peers, and share knowledge."
   },
   {
     step: "03",
@@ -159,31 +161,31 @@ export const HOW_IT_WORKS_STEPS = [
 
 export const FAQS = [
   {
-    question: "What is PHARMA QUIZ?",
-    answer: "PHARMA QUIZ is a pharmacy learning and MCQ practice platform designed for pharmacy students."
+    question: "What is PharmaFriends?",
+    answer: "PharmaFriends is an interactive pharmacy learning, community, and MCQ practice platform designed for pharmacy students and professionals."
   },
   {
-    question: "Who can use PHARMA QUIZ?",
-    answer: "Pharmacy students and learners preparing for pharmacy-related examinations can use the platform."
+    question: "Who can use PharmaFriends?",
+    answer: "Pharmacy students, graduates, and candidates preparing for pharmacy-related examinations and careers can use the platform."
   },
   {
-    question: "Is PHARMA QUIZ available on Android?",
-    answer: "Yes. PHARMA QUIZ is available on Google Play."
+    question: "Is PharmaFriends available on Android?",
+    answer: "Yes. PharmaFriends is available on Google Play for Android devices."
   },
   {
-    question: "What subjects are covered?",
-    answer: "PHARMA QUIZ covers multiple pharmacy-related subjects and continuously expands its question bank."
+    question: "What subjects and features are covered?",
+    answer: "PharmaFriends covers multiple pharmacy-related subjects, live Pharma Battles, digital library references, peer discussions, and continuous question updates."
   },
   {
     question: "Can I practice MCQs on my phone?",
-    answer: "Yes. PHARMA QUIZ is designed for convenient mobile-based learning and practice."
+    answer: "Yes. PharmaFriends is designed for convenient mobile-based learning, social interaction, and practice."
   }
 ];
 
 export const PLACEHOLDER_REVIEWS = [
   {
     id: 1,
-    quote: "PHARMA QUIZ has made revising pharmacology classifications and mechanisms so much more manageable during daily commute.",
+    quote: "PharmaFriends has made revising pharmacology classifications and connecting with fellow pharmacy learners so much more manageable during daily commutes.",
     author: "Pharmacy Student",
     role: "B.Pharm Final Year (Placeholder Review)",
     badge: "Placeholder Testimonial"
@@ -197,7 +199,7 @@ export const PLACEHOLDER_REVIEWS = [
   },
   {
     id: 3,
-    quote: "A straightforward, focused MCQ tool built specifically for pharmacy students without unnecessary clutter or distractions.",
+    quote: "A straightforward, focused learning and community tool built specifically for pharmacy students without unnecessary clutter or distractions.",
     author: "Clinical Pharmacy Learner",
     role: "Pharm.D Candidate (Placeholder Review)",
     badge: "Placeholder Testimonial"

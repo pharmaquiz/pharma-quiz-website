@@ -12,6 +12,7 @@ import FAQSection from "@/components/FAQSection";
 import FinalCTA from "@/components/FinalCTA";
 import ContactForm from "@/components/ContactForm";
 import InteractiveQuizDemo from "@/components/InteractiveQuizDemo";
+import RebrandAnnouncement from "@/components/RebrandAnnouncement";
 import { Mail, MessageSquare, Sparkles } from "lucide-react";
 import { SITE_CONFIG } from "@/lib/constants";
 
@@ -20,6 +21,9 @@ export default function HomePage() {
     <>
       {/* 1. Hero Section */}
       <Hero />
+
+      {/* Official Brand Evolution Announcement */}
+      <RebrandAnnouncement />
 
       {/* 2. Quick Features */}
       <QuickFeatures />
@@ -54,7 +58,7 @@ export default function HomePage() {
       {/* 6. App Showcase Section */}
       <AppShowcase />
 
-      {/* 7. Why Choose PHARMA QUIZ Section */}
+      {/* 7. Why Choose PharmaFriends Section */}
       <WhySection />
 
       {/* 8. How It Works Section */}

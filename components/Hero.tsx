@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 import GooglePlayButton from "./GooglePlayButton";
 import PhoneMockup from "./PhoneMockup";
+import { SITE_CONFIG } from "@/lib/constants";
 
 export default function Hero() {
   const highlights = [
@@ -38,7 +39,7 @@ export default function Hero() {
 
             {/* Subheading */}
             <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-              <strong className="font-semibold text-slate-800">PHARMA QUIZ</strong> is your smart pharmacy study companion, designed to help pharmacy students practice MCQs, strengthen their knowledge, and prepare confidently for exams.
+              <strong className="font-semibold text-slate-800">{SITE_CONFIG.brandName}</strong> is your smart pharmacy study and community companion, designed to help pharmacy students practice MCQs, connect with peers, and prepare confidently for exams.
             </p>
 
             {/* Highlights bullet pills */}
@@ -98,7 +99,7 @@ export default function Hero() {
               {/* Main Phone Frame */}
               <PhoneMockup
                 screenSrc="/images/app-screenshots/home.jpg"
-                alt="PHARMA QUIZ Android App Home Interface"
+                alt="PharmaFriends Android App Home Interface"
                 badgeText="App Preview"
                 priority={true}
               />

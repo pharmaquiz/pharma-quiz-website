@@ -156,7 +156,7 @@ export default function ContactForm() {
               rows={4}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="How can we assist you with PHARMA QUIZ?"
+              placeholder="How can we assist you with PharmaFriends?"
               className={`w-full px-4 py-3 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors resize-y ${
                 errors.message ? "border-rose-400 bg-rose-50/30" : "border-slate-300 bg-white"
               }`}

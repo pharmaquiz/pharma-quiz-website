@@ -23,7 +23,7 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow border border-slate-700 bg-white flex items-center justify-center">
                 <Image
                   src="/images/app-screenshots/logo.jpg"
-                  alt="PHARMA QUIZ Logo"
+                  alt="PharmaFriends Logo"
                   width={40}
                   height={40}
                   className="w-full h-full object-cover"
@@ -37,7 +37,7 @@ export default function Footer() {
               {SITE_CONFIG.tagline}
             </p>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              Designed specifically for pharmacy students to practice MCQs, solidify conceptual understanding, and prepare effectively for exams.
+              Designed for pharmacy students and professionals to practice MCQs, connect with peers, and prepare effectively for exams.
             </p>
             <div className="pt-2">
               <GooglePlayButton variant="white" size="sm" />

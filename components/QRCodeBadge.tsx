@@ -19,7 +19,7 @@ export default function QRCodeBadge({
       <div className="relative w-24 h-24 bg-white p-1.5 rounded-xl shadow-inner border border-slate-100 flex-shrink-0">
         <Image
           src="/images/qr-code.svg"
-          alt="Scan QR code to download PHARMA QUIZ on Google Play"
+          alt="Scan QR code to download PharmaFriends on Google Play"
           width={90}
           height={90}
           className="w-full h-full object-contain"

@@ -79,7 +79,7 @@ export default function AboutPage() {
           <div className="lg:col-span-6 flex justify-center">
             <PhoneMockup
               screenSrc="/images/app-screenshots/home2.jpg"
-              alt="PHARMA QUIZ Application Overview"
+              alt="PharmaFriends Application Overview"
               badgeText="Mobile Practice Platform"
             />
           </div>
@@ -112,7 +112,7 @@ export default function AboutPage() {
         {/* CTA Card */}
         <div className="my-16 p-8 sm:p-12 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
           <div className="space-y-3 text-center md:text-left">
-            <h3 className="text-2xl sm:text-3xl font-bold">Start Practicing With PHARMA QUIZ</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold">Start Practicing With PharmaFriends</h3>
             <p className="text-slate-300 text-sm max-w-lg">
               Download the Android application on Google Play and start practicing MCQs today.
             </p>

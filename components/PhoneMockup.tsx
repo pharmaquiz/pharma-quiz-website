@@ -12,7 +12,7 @@ interface PhoneMockupProps {
 
 export default function PhoneMockup({
   screenSrc = "/images/app-screenshots/home.jpg",
-  alt = "PHARMA QUIZ Android App Interface",
+  alt = "PharmaFriends Android App Interface",
   className = "",
   badgeText,
   priority = false,

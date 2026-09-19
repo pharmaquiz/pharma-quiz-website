@@ -23,7 +23,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: "5 min read",
     date: "Aug 2026",
     author: {
-      name: "PHARMA QUIZ Editorial Team",
+      name: "PharmaFriends Editorial Team",
       role: "Pharmacy Education Insights (Sample Article)"
     },
     isPlaceholder: true,
@@ -49,7 +49,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: "4 min read",
     date: "Aug 2026",
     author: {
-      name: "PHARMA QUIZ Editorial Team",
+      name: "PharmaFriends Editorial Team",
       role: "Learning Methodology (Sample Article)"
     },
     isPlaceholder: true,
@@ -72,7 +72,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: "6 min read",
     date: "Aug 2026",
     author: {
-      name: "PHARMA QUIZ Editorial Team",
+      name: "PharmaFriends Editorial Team",
       role: "Medicinal Chemistry (Sample Article)"
     },
     isPlaceholder: true,
@@ -95,7 +95,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: "5 min read",
     date: "Aug 2026",
     author: {
-      name: "PHARMA QUIZ Editorial Team",
+      name: "PharmaFriends Editorial Team",
       role: "Formulation Science (Sample Article)"
     },
     isPlaceholder: true,

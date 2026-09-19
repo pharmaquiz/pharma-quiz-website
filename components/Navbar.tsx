@@ -43,7 +43,7 @@ export default function Navbar() {
             <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm group-hover:scale-105 transition-transform duration-200 border border-teal-500/20 bg-white flex items-center justify-center">
               <Image
                 src="/images/app-screenshots/logo.jpg"
-                alt="PHARMA QUIZ Logo"
+                alt="PharmaFriends Logo"
                 width={40}
                 height={40}
                 className="w-full h-full object-cover"
@@ -55,7 +55,7 @@ export default function Navbar() {
                 {SITE_CONFIG.brandName}
               </span>
               <span className="text-[10px] font-semibold text-teal-600 tracking-wider uppercase -mt-1 hidden sm:block">
-                Pharmacy MCQ Platform
+                Pharmacy Learning & Community
               </span>
             </div>
           </Link>
@@ -140,7 +140,7 @@ export default function Navbar() {
               className="flex items-center justify-center gap-2 w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-xl shadow text-center"
             >
               <Download className="w-4 h-4" />
-              <span>Download PHARMA QUIZ on Google Play</span>
+              <span>Download PharmaFriends on Google Play</span>
             </a>
           </div>
         </div>

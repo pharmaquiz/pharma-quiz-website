@@ -31,7 +31,7 @@ export default function GooglePlayButton({
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
-      aria-label="Download PHARMA QUIZ on Google Play"
+      aria-label="Download PharmaFriends on Google Play"
     >
       <svg
         className={size === "lg" ? "w-6 h-6" : "w-5 h-5"}
