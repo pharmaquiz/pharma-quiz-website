@@ -2,15 +2,27 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import AuthBrandingPanel from "@/components/AuthBrandingPanel";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle2,
+  KeyRound,
+  ShieldAlert,
+  Smartphone
+} from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/wallet";
+  const redirectUrl = searchParams.get("redirect") || "/feed";
 
   const { signInWithEmail, signInWithGoogle, sendPasswordReset, resendVerification } = useAuth();
 
@@ -100,226 +112,266 @@ function LoginForm() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0F172A] via-[#0B1329] to-[#030712] text-slate-100 flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Decorative Neon Pharmacy Ambient Glow */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+  const signUpHref = `/signup${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(redirectUrl)}` : ""}`;
 
-      <div className="max-w-md w-full relative z-10">
-        {/* Rx Brand Emblem */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 border border-teal-500/40 p-1.5 shadow-lg shadow-teal-500/20 backdrop-blur-md mb-4 group hover:scale-105 transition-transform">
-            <Image
-              src="/images/app-screenshots/logo.jpg"
-              alt="PharmaFriends Logo"
-              width={70}
-              height={70}
-              className="w-full h-full object-cover rounded-xl"
-              priority
+  return (
+    <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-6 sm:p-8 relative">
+      {/* Facebook-Inspired Segmented Mode Switcher */}
+      <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
+        <button
+          type="button"
+          className="flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all"
+        >
+          Sign In
+        </button>
+        <Link
+          href={signUpHref}
+          className="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-900 text-center transition-all"
+        >
+          Create Account
+        </Link>
+      </div>
+
+      {/* Form Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Welcome Back
+        </h2>
+        <p className="mt-1.5 text-xs sm:text-sm text-slate-500">
+          Sign in to manage your Capsule Wallet and track your quiz ranks.
+        </p>
+      </div>
+
+      {/* Error & Success Alerts */}
+      {error && (
+        <div
+          role="alert"
+          className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm"
+        >
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {successMsg && (
+        <div
+          role="alert"
+          className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-sm"
+        >
+          <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
+      {/* Login Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email Field */}
+        <div>
+          <label
+            htmlFor="login-email"
+            className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
+          >
+            Email Address
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <Mail className="w-4 h-4 text-red-500" />
+            </div>
+            <input
+              id="login-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="pharmacist@example.com"
+              required
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-all shadow-sm"
             />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Welcome to <span className="bg-gradient-to-r from-teal-400 to-cyan-300 bg-clip-text text-transparent">PharmaFriends</span>
-          </h1>
-          <p className="mt-2 text-sm text-cyan-200/80">
-            Sign in to access your shared Capsule Wallet and study progress
-          </p>
         </div>
 
-        {/* Card Box */}
-        <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-6 sm:p-8">
-          {error && (
-            <div className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-red-950/70 border border-red-500/50 text-red-200 text-sm">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="mb-5 flex items-start gap-3 p-3.5 rounded-xl bg-teal-950/70 border border-teal-500/50 text-teal-200 text-sm">
-              <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@pharmacy.edu"
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent text-sm transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResetEmail(email);
-                    setResetMsg("");
-                    setShowForgotModal(true);
-                  }}
-                  className="text-xs text-teal-400 hover:text-teal-300 transition-colors font-medium"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4 text-cyan-400" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent text-sm transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Button */}
+        {/* Password Field */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label
+              htmlFor="login-password"
+              className="text-xs font-bold text-slate-700 uppercase tracking-wider"
+            >
+              Password
+            </label>
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-teal-500/20 transition-all duration-200 disabled:opacity-50 cursor-pointer transform hover:-translate-y-0.5"
+              type="button"
+              onClick={() => {
+                setResetEmail(email);
+                setResetMsg("");
+                setShowForgotModal(true);
+              }}
+              className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors font-semibold"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Signing In...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign In with Email</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              Forgot password?
             </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-700" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-900 px-3 text-slate-400">or continue with</span>
-            </div>
           </div>
-
-          {/* Google Sign In Button */}
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-slate-800 hover:bg-slate-700/80 border border-slate-600 rounded-xl text-white font-medium text-sm transition-all shadow-sm hover:border-slate-500 cursor-pointer"
-          >
-            {googleLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-teal-400" />
-            ) : (
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#EA4335"
-                  d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                />
-                <path
-                  fill="#4285F4"
-                  d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 17C3.7 20.7 7.5 23.5 12 23.5z"
-                />
-              </svg>
-            )}
-            <span>Sign in with Google</span>
-          </button>
-
-          {/* Sign Up Link */}
-          <div className="mt-6 text-center text-sm text-slate-400">
-            Don&apos;t have an account yet?{" "}
-            <Link
-              href={`/signup${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(redirectUrl)}` : ""}`}
-              className="text-teal-400 hover:text-teal-300 font-semibold transition-colors"
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <Lock className="w-4 h-4 text-red-500" />
+            </div>
+            <input
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-all shadow-sm"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
             >
-              Sign Up
-            </Link>
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
         </div>
 
-        {/* Cross-Platform Assurance Banner */}
-        <div className="mt-6 text-center text-xs text-slate-400">
-          <p>
-            🔐 <strong>Shared Account:</strong> Use the same login credentials and Capsule balance across both the PharmaFriends Android app and website.
-          </p>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-700 hover:via-rose-700 hover:to-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-600/25 transition-all duration-200 disabled:opacity-60 cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 text-sm"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Signing In...</span>
+            </>
+          ) : (
+            <>
+              <span>Sign In</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Social Sign-in Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-200" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase font-medium">
+          <span className="bg-white px-3 text-slate-400">or continue with</span>
         </div>
       </div>
 
-      {/* Forgot Password Modal */}
+      {/* Functional Google Sign In Button */}
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={googleLoading}
+        className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-white hover:bg-slate-50/90 border border-slate-300 rounded-xl text-slate-700 font-semibold text-sm transition-all shadow-sm hover:border-slate-400 disabled:opacity-60 cursor-pointer"
+      >
+        {googleLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+        ) : (
+          <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="#EA4335"
+              d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+            />
+            <path
+              fill="#4285F4"
+              d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 17C3.7 20.7 7.5 23.5 12 23.5z"
+            />
+          </svg>
+        )}
+        <span>Sign in with Google</span>
+      </button>
+
+      {/* Sign Up Navigation Callout */}
+      <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs sm:text-sm text-slate-500">
+        Don&apos;t have a PharmaFriends account?{" "}
+        <Link
+          href={signUpHref}
+          className="text-red-600 hover:text-red-700 font-bold transition-colors inline-flex items-center gap-1"
+        >
+          <span>Create Account</span>
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
+      </div>
+
+      {/* Unified Android + Web Shared Account Assurance */}
+      <div className="mt-5 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-600">
+        <Smartphone className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <span className="font-bold text-slate-800">Shared Account Sync:</span>{" "}
+          Use the exact same email & password across the PharmaFriends Android App and Website.
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          3. FORGOT PASSWORD MODAL (Accessible, Preserved Functionality)
+          ───────────────────────────────────────────────────────────── */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 text-left shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2">Reset Password</h3>
-            <p className="text-xs text-slate-300 mb-4">
-              Enter your email address to receive password reset instructions.
+        <div
+          role="dialog"
+          aria-labelledby="forgot-password-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        >
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-6 text-left shadow-2xl">
+            <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mb-3">
+              <KeyRound className="w-5 h-5" />
+            </div>
+            <h3 id="forgot-password-title" className="text-lg font-bold text-slate-900 mb-1">
+              Reset Password
+            </h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Enter your registered email address and we will send you a secure password reset link.
             </p>
+
             {resetMsg && (
-              <div className="mb-3 p-2.5 rounded-lg bg-teal-950/70 border border-teal-500/40 text-teal-200 text-xs">
+              <div className="mb-3 p-2.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
                 {resetMsg}
               </div>
             )}
+
             <form onSubmit={handleResetPassword} className="space-y-3">
-              <input
-                type="email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                placeholder="name@pharmacy.edu"
-                required
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
-              />
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Registered Email
+                </label>
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="pharmacist@example.com"
+                  required
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                />
+              </div>
+
               <div className="flex gap-2 justify-end mt-4">
                 <button
                   type="button"
                   onClick={() => setShowForgotModal(false)}
-                  className="px-3.5 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg"
+                  className="px-3.5 py-1.5 text-xs text-slate-600 hover:text-slate-900 rounded-lg cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={resetLoading}
-                  className="px-4 py-1.5 text-xs font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-lg flex items-center gap-1.5"
+                  className="px-4 py-1.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center gap-1.5 shadow cursor-pointer disabled:opacity-60"
                 >
                   {resetLoading && <Loader2 className="w-3 h-3 animate-spin" />}
                   Send Reset Link
@@ -330,28 +382,38 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Email Verification Required Modal */}
+      {/* ─────────────────────────────────────────────────────────────
+          4. UNVERIFIED EMAIL MODAL (Preserved Functionality)
+          ───────────────────────────────────────────────────────────── */}
       {showUnverifiedModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-amber-500/40 rounded-2xl max-w-sm w-full p-6 text-left shadow-2xl">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
-              <Mail className="w-6 h-6" />
+        <div
+          role="dialog"
+          aria-labelledby="unverified-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        >
+          <div className="bg-white border border-amber-200 rounded-2xl max-w-sm w-full p-6 text-left shadow-2xl">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-3">
+              <ShieldAlert className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1.5">Verify Your Email</h3>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">
+            <h3 id="unverified-title" className="text-lg font-bold text-slate-900 mb-1.5">
+              Verify Your Email
+            </h3>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
               Your account email has not been verified yet. Please check your inbox and click the verification link before logging in.
             </p>
+
             {resendStatus && (
-              <div className="mb-3 p-2.5 rounded-lg bg-teal-950/70 border border-teal-500/40 text-teal-200 text-xs">
+              <div className="mb-3 p-2.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
                 {resendStatus}
               </div>
             )}
+
             <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={handleResendVerification}
                 disabled={resending}
-                className="w-full py-2 text-xs font-semibold bg-teal-500 hover:bg-teal-600 text-white rounded-xl flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-xl flex items-center justify-center gap-1.5 shadow cursor-pointer disabled:opacity-60"
               >
                 {resending && <Loader2 className="w-3 h-3 animate-spin" />}
                 Resend Verification Link
@@ -359,7 +421,7 @@ function LoginForm() {
               <button
                 type="button"
                 onClick={() => setShowUnverifiedModal(false)}
-                className="w-full py-2 text-xs text-slate-400 hover:text-white rounded-xl"
+                className="w-full py-2 text-xs text-slate-500 hover:text-slate-800 rounded-xl cursor-pointer"
               >
                 Close
               </button>
@@ -373,12 +435,26 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-400" />
+    <div className="min-h-[calc(100vh-4rem)] pt-16 lg:pt-20 flex flex-col lg:flex-row bg-slate-50">
+      {/* ─────────────────────────────────────────────────────────────
+          1. LEFT BRANDING PANEL (~50% width on desktop, compact on mobile)
+          ───────────────────────────────────────────────────────────── */}
+      <AuthBrandingPanel mode="login" />
+
+      {/* ─────────────────────────────────────────────────────────────
+          2. RIGHT AUTHENTICATION PANEL (~50% width on desktop)
+          ───────────────────────────────────────────────────────────── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-slate-50/80">
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-12 flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+            </div>
+          }
+        >
+          <LoginForm />
+        </Suspense>
       </div>
-    }>
-      <LoginForm />
-    </Suspense>
+    </div>
   );
 }

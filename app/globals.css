@@ -63,3 +63,106 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* PharmaFriends Split Screen Authentication Animations */
+@keyframes pf-logo-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+
+@keyframes pf-capsule-float-1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(-18deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(-10deg);
+  }
+}
+
+@keyframes pf-capsule-float-2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(22deg);
+  }
+  50% {
+    transform: translateY(-22px) rotate(30deg);
+  }
+}
+
+@keyframes pf-capsule-float-3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(-35deg);
+  }
+  50% {
+    transform: translateY(16px) rotate(-28deg);
+  }
+}
+
+@keyframes pf-particle-pulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes pf-neon-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+    filter: blur(40px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+    filter: blur(55px);
+  }
+}
+
+.animate-pf-logo {
+  animation: pf-logo-float 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-pf-capsule-1 {
+  animation: pf-capsule-float-1 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-pf-capsule-2 {
+  animation: pf-capsule-float-2 9s ease-in-out infinite 1s;
+  will-change: transform;
+}
+
+.animate-pf-capsule-3 {
+  animation: pf-capsule-float-3 8s ease-in-out infinite 2s;
+  will-change: transform;
+}
+
+.animate-pf-particle {
+  animation: pf-particle-pulse 4s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+.animate-pf-neon {
+  animation: pf-neon-glow 6s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pf-logo,
+  .animate-pf-capsule-1,
+  .animate-pf-capsule-2,
+  .animate-pf-capsule-3,
+  .animate-pf-particle,
+  .animate-pf-neon {
+    animation: none !important;
+    transform: none !important;
+  }
+}
