@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import AuthBrandingPanel from "@/components/AuthBrandingPanel";
 import {
@@ -21,8 +21,17 @@ import {
 
 function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/feed";
+  const [redirectUrl, setRedirectUrl] = useState("/wallet");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const redir = params.get("redirect");
+      if (redir) {
+        setRedirectUrl(redir);
+      }
+    }
+  }, []);
 
   const { signInWithEmail, signInWithGoogle, sendPasswordReset, resendVerification } = useAuth();
 
@@ -112,7 +121,10 @@ function LoginForm() {
     }
   };
 
-  const signUpHref = `/signup${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(redirectUrl)}` : ""}`;
+  const signUpHref =
+    redirectUrl && redirectUrl !== "/wallet"
+      ? `/signup?redirect=${encodeURIComponent(redirectUrl)}`
+      : "/signup";
 
   return (
     <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-6 sm:p-8 relative">
@@ -206,7 +218,7 @@ function LoginForm() {
                 setResetMsg("");
                 setShowForgotModal(true);
               }}
-              className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors font-semibold"
+              className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors font-semibold cursor-pointer"
             >
               Forgot password?
             </button>
