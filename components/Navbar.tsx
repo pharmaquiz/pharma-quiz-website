@@ -33,7 +33,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     setIsMobileMenuOpen(false);
     await logout();
-    router.push("/");
+    router.push("/login");
   };
 
   // Determine active links based on authentication state
@@ -51,7 +51,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Brand Logo & Name */}
           <Link
-            href="/"
+            href={user ? "/feed" : "/login"}
             className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-lg flex-shrink-0"
           >
             <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm group-hover:scale-105 transition-transform duration-200 border border-teal-500/20 bg-white flex items-center justify-center">
@@ -85,7 +85,7 @@ export default function Navbar() {
               </div>
             ) : (
               navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive = pathname === link.href || (link.href === "/feed" && (pathname === "/feed" || pathname === "/feeds"));
                 const isFeed = link.href === "/feed";
 
                 if (isFeed) {
@@ -209,7 +209,7 @@ export default function Navbar() {
         <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-4 pt-3 pb-6 space-y-3 transition-all animate-fadeIn">
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = pathname === link.href || (link.href === "/feed" && (pathname === "/feed" || pathname === "/feeds"));
               const isFeed = link.href === "/feed";
               return (
                 <Link

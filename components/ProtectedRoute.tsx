@@ -16,8 +16,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!loading && !user) {
-      const destination = pathname ? `/login?redirect=${encodeURIComponent(pathname)}` : "/login";
-      router.replace(destination);
+      const search = typeof window !== "undefined" ? window.location.search : "";
+      const fullPath = pathname ? `${pathname}${search}` : "/feed";
+      router.replace(`/login?redirect=${encodeURIComponent(fullPath)}`);
     }
   }, [user, loading, router, pathname]);
 

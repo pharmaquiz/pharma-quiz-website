@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import AuthBrandingPanel from "@/components/AuthBrandingPanel";
 import {
@@ -21,17 +21,12 @@ import {
 
 function LoginForm() {
   const router = useRouter();
-  const [redirectUrl, setRedirectUrl] = useState("/feed");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const redir = params.get("redirect");
-      if (redir) {
-        setRedirectUrl(redir);
-      }
-    }
-  }, []);
+  const searchParams = useSearchParams();
+  const rawRedirect = searchParams.get("redirect");
+  const redirectUrl =
+    rawRedirect && rawRedirect !== "/" && rawRedirect !== "/login"
+      ? rawRedirect
+      : "/feed";
 
   const { user, signInWithEmail, signInWithGoogle, sendPasswordReset, resendVerification } = useAuth();
 
@@ -126,6 +121,21 @@ function LoginForm() {
       setResendStatus(res.error || "Failed to resend verification link.");
     }
   };
+
+  // Prevent flash of login form if user is already authenticated
+  if (user) {
+    return (
+      <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-12 flex flex-col items-center justify-center text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600">
+          <Loader2 className="w-6 h-6 animate-spin" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-base font-bold text-slate-900">Redirecting to Feeds</h3>
+          <p className="text-xs text-slate-500">You are already signed in. Taking you to your feed...</p>
+        </div>
+      </div>
+    );
+  }
 
   const signUpHref =
     redirectUrl && redirectUrl !== "/feed"

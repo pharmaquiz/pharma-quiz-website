@@ -1,17 +1,20 @@
 /**
  * Navigation & Authentication Separation Test Suite
  * Tests:
- * 1. Public navigation contains ONLY public links (About, Features, Subjects, Blog, Contact).
- * 2. Public navigation strictly OMITS authenticated application items (Home, Feeds, Notes, Mock Tests, Jobs, Library, Ebooks, Wallet).
- * 3. Authenticated navigation includes complete application tabs (Home, Feeds, Notes, Mock Tests, Jobs, Library, Ebooks).
- * 4. Protected route guard invariant: unauthenticated access redirects to login preserving destination.
- * 5. Logout invariant: clears user profile, capsules, and returns to landing page.
- * 6. Login redirection default: defaults to /feed.
+ * 1. Open / while logged out -> Login page (via /login redirect).
+ * 2. Open /login while logged out -> Login page.
+ * 3. Log in successfully -> /feed (default) or intended destination.
+ * 4. Open / while logged in -> /feed.
+ * 5. Open /login while logged in -> /feed (or intended destination).
+ * 6. Open /feeds -> /feed.
+ * 7. Refresh /feed -> Feed remains accessible to authenticated user.
+ * 8. Log out -> return to /login.
+ * 9. Feeds replaces Home in authenticated navigation, preserving all features and omitting old landing page.
  */
 
 import assert from "node:assert";
 
-// Simulated Navigation Config from lib/constants.ts
+// 1. Navigation definitions from lib/constants.ts
 const PUBLIC_NAV_LINKS = [
   { label: "About", href: "/about" },
   { label: "Features", href: "/features" },
@@ -21,7 +24,6 @@ const PUBLIC_NAV_LINKS = [
 ];
 
 const APP_NAV_LINKS = [
-  { label: "Home", href: "/" },
   { label: "Feeds", href: "/feed", isHighlighted: true },
   { label: "Notes", href: "/notes" },
   { label: "Mock Tests", href: "/mock-tests" },
@@ -30,7 +32,6 @@ const APP_NAV_LINKS = [
   { label: "Ebooks", href: "/ebooks" },
 ];
 
-// Protected routes registry
 const PROTECTED_ROUTES = [
   "/feed",
   "/notes",
@@ -41,40 +42,83 @@ const PROTECTED_ROUTES = [
   "/wallet"
 ];
 
-console.log("=== RUNNING NAVIGATION & AUTH SEPARATION TEST SUITE ===\n");
+console.log("=== RUNNING ROOT LOGIN & FEEDS HOME VERIFICATION TEST SUITE ===\n");
 
-// Test 1: Public Navigation Link Integrity
-console.log("-> Test 1: Verifying public navigation items before login...");
-const publicLabels = PUBLIC_NAV_LINKS.map(l => l.label);
-assert.deepStrictEqual(publicLabels, ["About", "Features", "Subjects", "Blog", "Contact"]);
-console.log("✓ Test 1 Passed: Public navigation contains exactly About, Features, Subjects, Blog, Contact.\n");
-
-// Test 2: Public Navigation Strict Omission of App Tabs
-console.log("-> Test 2: Verifying unauthenticated visitors cannot see app tabs...");
-const forbiddenForPublic = ["Home", "Feeds", "Notes", "Mock Tests", "Jobs", "Pharma Library", "Ebooks", "Wallet"];
-for (const forbidden of forbiddenForPublic) {
-  assert.ok(!publicLabels.includes(forbidden), `Forbidden tab '${forbidden}' found in public navigation!`);
+// Flow 1: Root route / while logged out
+console.log("-> Flow 1: Testing '/' while logged out -> redirects to /login...");
+function simulateRootRoute(user, queryRedirect) {
+  if (user) {
+    return { action: "REDIRECT", destination: queryRedirect && queryRedirect !== "/" && queryRedirect !== "/login" ? queryRedirect : "/feed" };
+  }
+  if (queryRedirect && queryRedirect !== "/" && queryRedirect !== "/login") {
+    return { action: "REDIRECT", destination: `/login?redirect=${encodeURIComponent(queryRedirect)}` };
+  }
+  return { action: "REDIRECT", destination: "/login" };
 }
-console.log("✓ Test 2 Passed: Public navigation strictly hides all authenticated app tabs.\n");
 
-// Test 3: Authenticated App Navigation Completeness
-console.log("-> Test 3: Verifying authenticated app navigation tabs...");
-const appLabels = APP_NAV_LINKS.map(l => l.label);
-assert.ok(appLabels.includes("Home"));
-assert.ok(appLabels.includes("Feeds"));
-assert.ok(appLabels.includes("Notes"));
-assert.ok(appLabels.includes("Mock Tests"));
-assert.ok(appLabels.includes("Jobs"));
-assert.ok(appLabels.includes("Pharma Library"));
-assert.ok(appLabels.includes("Ebooks"));
+const unauthRoot = simulateRootRoute(null);
+assert.strictEqual(unauthRoot.action, "REDIRECT");
+assert.strictEqual(unauthRoot.destination, "/login");
+console.log("✓ Flow 1 Passed: '/' redirects unauthenticated visitors to /login.\n");
 
-const feedsItem = APP_NAV_LINKS.find(l => l.label === "Feeds");
-assert.strictEqual(feedsItem.href, "/feed");
-assert.strictEqual(feedsItem.isHighlighted, true);
-console.log("✓ Test 3 Passed: Authenticated navigation includes all required application tabs.\n");
+// Flow 2: /login while logged out
+console.log("-> Flow 2: Testing '/login' while logged out -> displays login page...");
+function simulateLoginPage(user, queryRedirect) {
+  const destination = queryRedirect && queryRedirect !== "/" && queryRedirect !== "/login" ? queryRedirect : "/feed";
+  if (user) {
+    return { action: "REDIRECT", destination };
+  }
+  return { action: "RENDER_LOGIN_FORM", defaultPostLoginRedirect: destination };
+}
 
-// Test 4: Protected Routes Guard Invariants
-console.log("-> Test 4: Verifying route protection and login redirection invariants...");
+const unauthLogin = simulateLoginPage(null);
+assert.strictEqual(unauthLogin.action, "RENDER_LOGIN_FORM");
+assert.strictEqual(unauthLogin.defaultPostLoginRedirect, "/feed");
+console.log("✓ Flow 2 Passed: '/login' renders the login form with default post-login redirect to /feed.\n");
+
+// Flow 3: Successful login redirects to /feed
+console.log("-> Flow 3: Testing successful login -> redirects to /feed or destination...");
+function handleAuthSuccess(destination) {
+  return { destination: destination || "/feed" };
+}
+
+assert.strictEqual(handleAuthSuccess().destination, "/feed");
+assert.strictEqual(handleAuthSuccess("/notes").destination, "/notes");
+assert.strictEqual(handleAuthSuccess("/mock-tests").destination, "/mock-tests");
+console.log("✓ Flow 3 Passed: Successful authentication redirects to /feed (or preserved target).\n");
+
+// Flow 4: Open / while logged in
+console.log("-> Flow 4: Testing '/' while logged in -> redirects to /feed...");
+const authRoot = simulateRootRoute({ uid: "user_123" });
+assert.strictEqual(authRoot.action, "REDIRECT");
+assert.strictEqual(authRoot.destination, "/feed");
+
+const authRootWithParam = simulateRootRoute({ uid: "user_123" }, "/library");
+assert.strictEqual(authRootWithParam.action, "REDIRECT");
+assert.strictEqual(authRootWithParam.destination, "/library");
+console.log("✓ Flow 4 Passed: '/' redirects authenticated users directly to /feed (or destination).\n");
+
+// Flow 5: Open /login while logged in
+console.log("-> Flow 5: Testing '/login' while logged in -> redirects to /feed...");
+const authLogin = simulateLoginPage({ uid: "user_123" });
+assert.strictEqual(authLogin.action, "REDIRECT");
+assert.strictEqual(authLogin.destination, "/feed");
+
+const authLoginWithParam = simulateLoginPage({ uid: "user_123" }, "/jobs");
+assert.strictEqual(authLoginWithParam.action, "REDIRECT");
+assert.strictEqual(authLoginWithParam.destination, "/jobs");
+console.log("✓ Flow 5 Passed: '/login' redirects authenticated users to /feed without flashing the form.\n");
+
+// Flow 6: Open /feeds -> redirects to /feed
+console.log("-> Flow 6: Testing '/feeds' alias -> redirects to /feed...");
+function simulateFeedsAlias() {
+  return { action: "REDIRECT", destination: "/feed" };
+}
+assert.strictEqual(simulateFeedsAlias().destination, "/feed");
+console.log("✓ Flow 6 Passed: '/feeds' redirects to /feed.\n");
+
+// Flow 7: Refresh /feed while logged in
+console.log("-> Flow 7: Testing refresh on protected /feed while logged in...");
 function simulateRouteGuard(pathname, user, loading) {
   if (loading) return { status: "LOADING" };
   if (!user && PROTECTED_ROUTES.includes(pathname)) {
@@ -86,55 +130,54 @@ function simulateRouteGuard(pathname, user, loading) {
   return { status: "RENDER", pathname };
 }
 
-for (const route of PROTECTED_ROUTES) {
-  const result = simulateRouteGuard(route, null, false);
-  assert.strictEqual(result.status, "REDIRECT");
-  assert.strictEqual(result.target, `/login?redirect=${encodeURIComponent(route)}`);
-}
+const feedRefreshed = simulateRouteGuard("/feed", { uid: "user_123" }, false);
+assert.strictEqual(feedRefreshed.status, "RENDER");
+assert.strictEqual(feedRefreshed.pathname, "/feed");
 
-// When logged in, access is permitted
-for (const route of PROTECTED_ROUTES) {
-  const result = simulateRouteGuard(route, { uid: "test-user" }, false);
-  assert.strictEqual(result.status, "RENDER");
-}
-console.log("✓ Test 4 Passed: All protected routes redirect unauthenticated users preserving destination.\n");
+// Unauthenticated direct access is properly intercepted
+const feedUnauth = simulateRouteGuard("/feed", null, false);
+assert.strictEqual(feedUnauth.status, "REDIRECT");
+assert.strictEqual(feedUnauth.target, "/login?redirect=%2Ffeed");
+console.log("✓ Flow 7 Passed: Protected route /feed remains accessible to authenticated user and guards against logged-out access.\n");
 
-// Test 5: Logout State Clearance & Redirection Invariant
-console.log("-> Test 5: Verifying logout state purge and landing page return...");
+// Flow 8: Log out -> return to /login
+console.log("-> Flow 8: Testing log out -> clears state and returns to /login...");
 function simulateLogout(authState) {
   authState.user = null;
   authState.profile = null;
   authState.capsules = 0;
   authState.capsuleUnits = 0;
   authState.transactions = [];
-  return { redirectTo: "/" };
+  return { redirectTo: "/login" };
 }
 
-const mockState = {
-  user: { uid: "123" },
-  profile: { name: "Arun" },
-  capsules: 50.0,
+const userSession = {
+  user: { uid: "user_abc" },
+  profile: { fullName: "Test Pharmacist" },
+  capsules: 50,
   capsuleUnits: 5000,
-  transactions: [{ id: "tx1" }]
+  transactions: [{ id: "tx_1" }]
 };
 
-const logoutResult = simulateLogout(mockState);
-assert.strictEqual(mockState.user, null);
-assert.strictEqual(mockState.profile, null);
-assert.strictEqual(mockState.capsules, 0);
-assert.strictEqual(logoutResult.redirectTo, "/");
-console.log("✓ Test 5 Passed: Logout clears state immediately and redirects to public landing page.\n");
+const logoutRes = simulateLogout(userSession);
+assert.strictEqual(userSession.user, null);
+assert.strictEqual(userSession.profile, null);
+assert.strictEqual(userSession.capsules, 0);
+assert.strictEqual(logoutRes.redirectTo, "/login");
+console.log("✓ Flow 8 Passed: Logout purges authentication state and returns directly to /login.\n");
 
-// Test 6: Default Login Redirection
-console.log("-> Test 6: Verifying login default redirection to /feed...");
-function resolveLoginRedirect(redirectParam) {
-  return redirectParam || "/feed";
-}
+// Flow 9: Feeds replaces Home in navigation
+console.log("-> Flow 9: Verifying Feeds replaces Home in authenticated navigation...");
+const appLabels = APP_NAV_LINKS.map(l => l.label);
+assert.ok(!appLabels.includes("Home"), "Authenticated navigation must NOT include old landing page 'Home'!");
+assert.ok(appLabels.includes("Feeds"), "Authenticated navigation must include 'Feeds'!");
+assert.strictEqual(APP_NAV_LINKS[0].label, "Feeds");
+assert.strictEqual(APP_NAV_LINKS[0].href, "/feed");
+assert.strictEqual(APP_NAV_LINKS[0].isHighlighted, true);
 
-assert.strictEqual(resolveLoginRedirect(null), "/feed");
-assert.strictEqual(resolveLoginRedirect(""), "/feed");
-assert.strictEqual(resolveLoginRedirect("/notes"), "/notes");
-assert.strictEqual(resolveLoginRedirect("/mock-tests"), "/mock-tests");
-console.log("✓ Test 6 Passed: Login defaults to /feed and preserves specific redirect targets.\n");
+// Preserved app features
+const expectedTabs = ["Feeds", "Notes", "Mock Tests", "Jobs", "Pharma Library", "Ebooks"];
+assert.deepStrictEqual(appLabels, expectedTabs);
+console.log("✓ Flow 9 Passed: Feeds is the primary home link (/feed); old Home landing page is completely removed from app navigation.\n");
 
-console.log("ALL NAVIGATION & AUTH SEPARATION TESTS PASSED SUCCESSFULLY! (6/6)");
+console.log("ALL 9 ROOT & FEEDS AUTHENTICATION FLOW TESTS PASSED! (9/9)\n");

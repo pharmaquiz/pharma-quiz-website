@@ -33,7 +33,6 @@ export const PUBLIC_NAV_LINKS = [
 ];
 
 export const APP_NAV_LINKS = [
-  { label: "Home", href: "/" },
   { label: "Feeds", href: "/feed", isHighlighted: true },
   { label: "Notes", href: "/notes" },
   { label: "Mock Tests", href: "/mock-tests" },
