@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   brandName: "PharmaFriends",
   domain: "pharmaquizz.com",
-  siteUrl: "https://pharmaquizz.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://www.pharmaquizz.com",
   contactEmail: "admin@pharmaquizz.com",
   playStoreUrl: "https://play.google.com/store/apps/details?id=com.moneykey.pharmaquiz",
   tagline: "Your Smart Pharmacy Learning & Community Companion",

@@ -4,13 +4,16 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, Download } from "lucide-react";
+import { Menu, X, Download, Coins, LogIn } from "lucide-react";
 import { SITE_CONFIG, NAV_LINKS } from "@/lib/constants";
+import { useAuth } from "@/context/AuthContext";
+import { formatCapsules } from "@/lib/capsules";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user, profile, capsules, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,16 +83,64 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right Action: Download App Button */}
+          {/* Right Action: Auth & Download App */}
           <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/wallet"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200/80 text-teal-900 text-xs font-bold hover:bg-teal-100/80 transition-colors shadow-sm"
+                  title="View Capsule Wallet"
+                >
+                  <span className="text-sm">💊</span>
+                  <span>{formatCapsules(capsules)}</span>
+                  <span className="text-[10px] text-teal-600 uppercase font-semibold">Caps</span>
+                </Link>
+
+                <Link
+                  href="/wallet"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    pathname === "/wallet"
+                      ? "text-teal-600 bg-teal-50/80 font-semibold"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  }`}
+                >
+                  Wallet
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className="px-3 py-2 rounded-lg text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-teal-700 hover:bg-teal-50 transition-all"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-3.5 py-2 rounded-xl text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition-all"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+
             <a
               href={SITE_CONFIG.playStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white text-sm font-semibold px-4.5 py-2.5 rounded-xl shadow-sm hover:shadow transition-all duration-200 transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm hover:shadow transition-all duration-200 transform hover:-translate-y-0.5"
             >
               <Download className="w-4 h-4" />
-              <span>Download App</span>
+              <span>App</span>
             </a>
           </div>
 
@@ -132,12 +183,55 @@ export default function Navbar() {
               );
             })}
           </nav>
-          <div className="pt-3 border-t border-slate-100">
+          <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+            {user ? (
+              <>
+                <Link
+                  href="/wallet"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 font-semibold text-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>💊</span>
+                    <span>Capsule Wallet</span>
+                  </span>
+                  <span className="font-bold text-teal-700">{formatCapsules(capsules)} Caps</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium"
+                >
+                  Sign Out ({user.email})
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-sm font-semibold text-center"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold text-center shadow-sm"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+
             <a
               href={SITE_CONFIG.playStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-xl shadow text-center"
+              className="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-black text-white font-semibold py-3 px-4 rounded-xl shadow text-center text-sm mt-1"
             >
               <Download className="w-4 h-4" />
               <span>Download PharmaFriends on Google Play</span>
