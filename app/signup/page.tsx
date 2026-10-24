@@ -25,7 +25,7 @@ import {
 
 function SignUpForm() {
   const router = useRouter();
-  const [redirectUrl, setRedirectUrl] = useState("/login");
+  const [redirectUrl, setRedirectUrl] = useState("/feed");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,7 +37,13 @@ function SignUpForm() {
     }
   }, []);
 
-  const { signUpWithEmail } = useAuth();
+  const { user, signUpWithEmail } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.replace(redirectUrl || "/feed");
+    }
+  }, [user, redirectUrl, router]);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -102,9 +108,9 @@ function SignUpForm() {
   };
 
   const loginHref =
-    redirectUrl && redirectUrl !== "/login"
+    redirectUrl
       ? `/login?redirect=${encodeURIComponent(redirectUrl)}`
-      : "/login";
+      : "/login?redirect=/feed";
 
   return (
     <div className="w-full max-w-lg bg-white border border-slate-200/90 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-6 sm:p-8 relative">

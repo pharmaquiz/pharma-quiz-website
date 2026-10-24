@@ -33,6 +33,12 @@ export default function WalletPage() {
   const [spending, setSpending] = useState(false);
   const [spendMsg, setSpendMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login?redirect=/wallet");
+    }
+  }, [loading, user, router]);
+
   // If loading auth state
   if (loading) {
     return (

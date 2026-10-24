@@ -491,6 +491,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Sign out
   const logout = async () => {
     await signOut(auth);
+    setUser(null);
+    setProfile(null);
+    setCapsules(0);
+    setCapsuleUnits(0);
+    setTransactions([]);
   };
 
   // Refresh profile

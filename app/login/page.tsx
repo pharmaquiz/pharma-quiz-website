@@ -21,7 +21,7 @@ import {
 
 function LoginForm() {
   const router = useRouter();
-  const [redirectUrl, setRedirectUrl] = useState("/wallet");
+  const [redirectUrl, setRedirectUrl] = useState("/feed");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,7 +33,13 @@ function LoginForm() {
     }
   }, []);
 
-  const { signInWithEmail, signInWithGoogle, sendPasswordReset, resendVerification } = useAuth();
+  const { user, signInWithEmail, signInWithGoogle, sendPasswordReset, resendVerification } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.replace(redirectUrl);
+    }
+  }, [user, redirectUrl, router]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,7 +128,7 @@ function LoginForm() {
   };
 
   const signUpHref =
-    redirectUrl && redirectUrl !== "/wallet"
+    redirectUrl && redirectUrl !== "/feed"
       ? `/signup?redirect=${encodeURIComponent(redirectUrl)}`
       : "/signup";
 

@@ -24,13 +24,41 @@ export const SITE_CONFIG = {
   ]
 };
 
-export const NAV_LINKS = [
-  { label: "Home", href: "/" },
+export const PUBLIC_NAV_LINKS = [
   { label: "About", href: "/about" },
   { label: "Features", href: "/features" },
   { label: "Subjects", href: "/subjects" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
+];
+
+export const APP_NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "Feeds", href: "/feed", isHighlighted: true },
+  { label: "Notes", href: "/notes" },
+  { label: "Mock Tests", href: "/mock-tests" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "Pharma Library", href: "/library" },
+  { label: "Ebooks", href: "/ebooks" },
+];
+
+// Backwards compatibility alias
+export const NAV_LINKS = PUBLIC_NAV_LINKS;
+
+export const TRENDING_TOPICS = [
+  { tag: "Pharmacology", count: "1.4k posts", color: "from-rose-500 to-pink-600" },
+  { tag: "GPAT2026", count: "2.8k posts", color: "from-amber-500 to-orange-600" },
+  { tag: "ClinicalPharmacy", count: "950 posts", color: "from-blue-500 to-cyan-600" },
+  { tag: "DrugInteractions", count: "820 posts", color: "from-emerald-500 to-teal-600" },
+  { tag: "Pharmaceutics", count: "640 posts", color: "from-purple-500 to-indigo-600" },
+  { tag: "Pharmacovigilance", count: "510 posts", color: "from-pink-500 to-rose-600" },
+];
+
+export const COMMUNITY_CHANNELS = [
+  { name: "Clinical Case Discussions", members: "3.2k Scholars", icon: "Stethoscope" },
+  { name: "GPAT & NIPER Aspirants", members: "5.1k Scholars", icon: "GraduationCap" },
+  { name: "Hospital & Community Pharmacy", members: "2.4k Scholars", icon: "Building2" },
+  { name: "Drug Safety & ADR Alerts", members: "1.9k Scholars", icon: "ShieldAlert" },
 ];
 
 export const QUICK_FEATURES = [
