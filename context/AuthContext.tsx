@@ -24,6 +24,7 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { initializePresence, terminatePresence } from "@/lib/presence";
 import { UserProfile, CapsuleTransaction, CAPSULE_PRICES, toMinorUnits } from "@/lib/capsules";
 
 interface SignUpData {
@@ -89,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
 
       if (!currentUser) {
+        terminatePresence();
         setProfile(null);
         setCapsules(0);
         setCapsuleUnits(0);
@@ -96,6 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
+
+      // Initialize presence tracking for this session
+      initializePresence(currentUser.uid);
 
       // Check user profile document in Firestore
       const userRef = doc(db, "users", currentUser.uid);
@@ -106,13 +111,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const data = snap.data();
           const capVal = typeof data.capsules === "number" ? data.capsules : 50.0;
           const unitsVal = typeof data.capsuleUnits === "number" ? data.capsuleUnits : toMinorUnits(capVal);
+          const resolvedPhotoUrl =
+            data.photoUrl ||
+            data.profileImageUrl ||
+            data.userProfileImage ||
+            data.imageUrl ||
+            data.avatarUrl ||
+            currentUser.photoURL ||
+            "";
 
           setProfile({
             uid: currentUser.uid,
             name: data.name || data.fullName || currentUser.displayName || "Pharmacist",
             fullName: data.fullName || data.name || currentUser.displayName || "Pharmacist",
             email: currentUser.email || data.email || "",
-            photoUrl: data.photoUrl || currentUser.photoURL || "",
+            photoUrl: resolvedPhotoUrl,
             phone: data.phone || "",
             profession: data.profession || "",
             country: data.country || "India",
@@ -161,12 +174,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setCapsuleUnits(unitsVal);
         setProfile((prev) => {
           if (!prev) return null;
+          const updatedPhoto =
+            data.photoUrl ||
+            data.profileImageUrl ||
+            data.userProfileImage ||
+            data.imageUrl ||
+            data.avatarUrl ||
+            prev.photoUrl;
+
           return {
             ...prev,
             capsules: capVal,
             capsuleUnits: unitsVal,
             name: data.name || prev.name,
             fullName: data.fullName || prev.fullName,
+            photoUrl: updatedPhoto,
             role: data.role || prev.role,
             isBanned: data.isBanned ?? prev.isBanned,
             dailyRewardStreak: data.dailyRewardStreak ?? prev.dailyRewardStreak,
@@ -490,6 +512,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Sign out
   const logout = async () => {
+    terminatePresence();
     await signOut(auth);
     setUser(null);
     setProfile(null);

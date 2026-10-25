@@ -116,6 +116,31 @@ export interface SuggestedPeer {
   isFollowing?: boolean;
 }
 
+export interface FollowUserItem {
+  userId: string;
+  name: string;
+  photoUrl: string;
+  profession?: string;
+  createdAt?: number;
+}
+
+/**
+ * Resolves avatar URL from any Firestore user, post, comment or peer object.
+ * Checks all known schema field variations: photoUrl, photoURL, userProfileImage, profileImageUrl, imageUrl, avatarUrl.
+ */
+export function resolveAvatarUrl(obj: any): string {
+  if (!obj || typeof obj !== "object") return "";
+  const candidate =
+    obj.photoUrl ||
+    obj.photoURL ||
+    obj.userProfileImage ||
+    obj.profileImageUrl ||
+    obj.imageUrl ||
+    obj.avatarUrl ||
+    "";
+  return typeof candidate === "string" ? candidate.trim() : "";
+}
+
 /**
  * Extracts hashtags (#keyword) from post text.
  */
@@ -346,6 +371,70 @@ export function subscribeUserFollowing(
     onUpdate(ids);
   }, (err) => {
     console.warn("Error observing user following:", err);
+  });
+}
+
+/**
+ * Real-time subscription to the full Following users list (`users/{userId}/following`).
+ * Provides full profile information including real avatar photoUrl and profession.
+ */
+export function subscribeFollowingList(
+  userId: string,
+  onUpdate: (following: FollowUserItem[]) => void
+): Unsubscribe {
+  if (!userId) {
+    onUpdate([]);
+    return () => {};
+  }
+
+  const fRef = collection(db, "users", userId, "following");
+  return onSnapshot(fRef, (snap) => {
+    const list: FollowUserItem[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      list.push({
+        userId: d.id,
+        name: data.name || data.fullName || "Pharmacy Colleague",
+        photoUrl: resolveAvatarUrl(data),
+        profession: data.profession || data.qualification || "Pharmacist",
+        createdAt: typeof data.createdAt === "number" ? data.createdAt : Date.now()
+      });
+    });
+    onUpdate(list);
+  }, (err) => {
+    console.warn("Error observing following list:", err);
+  });
+}
+
+/**
+ * Real-time subscription to the full Followers users list (`users/{userId}/followers`).
+ * Provides full profile information including real avatar photoUrl and profession.
+ */
+export function subscribeFollowersList(
+  userId: string,
+  onUpdate: (followers: FollowUserItem[]) => void
+): Unsubscribe {
+  if (!userId) {
+    onUpdate([]);
+    return () => {};
+  }
+
+  const fRef = collection(db, "users", userId, "followers");
+  return onSnapshot(fRef, (snap) => {
+    const list: FollowUserItem[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      list.push({
+        userId: d.id,
+        name: data.name || data.fullName || "Pharmacy Scholar",
+        photoUrl: resolveAvatarUrl(data),
+        profession: data.profession || data.qualification || "Pharmacist",
+        createdAt: typeof data.createdAt === "number" ? data.createdAt : Date.now()
+      });
+    });
+    onUpdate(list);
+  }, (err) => {
+    console.warn("Error observing followers list:", err);
   });
 }
 
@@ -908,7 +997,7 @@ export async function unfollowPeerUser(
  */
 export async function fetchSuggestedPeers(currentUid: string, limitCount: number = 6): Promise<SuggestedPeer[]> {
   try {
-    const q = query(collection(db, "public_profiles"), limit(20));
+    const q = query(collection(db, "public_profiles"), limit(25));
     const snap = await getDocs(q);
     const peers: SuggestedPeer[] = [];
 
@@ -920,7 +1009,7 @@ export async function fetchSuggestedPeers(currentUid: string, limitCount: number
       peers.push({
         uid: d.id,
         name: data.name || data.fullName || "Pharmacy Scholar",
-        photoUrl: data.photoUrl || "",
+        photoUrl: resolveAvatarUrl(data),
         profession: data.profession || data.qualification || "Pharmacist",
         qualification: data.qualification || "B.Pharm",
         state: data.state || "",

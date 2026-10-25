@@ -9,10 +9,13 @@ import {
   SocialFeedPost,
   FeedComment,
   SuggestedPeer,
+  FollowUserItem,
   subscribeFeedPosts,
   subscribeUserLikes,
   subscribeUserBookmarks,
   subscribeUserFollowing,
+  subscribeFollowingList,
+  subscribeFollowersList,
   subscribePostComments,
   createSocialPost,
   togglePostLike,
@@ -23,8 +26,11 @@ import {
   followPeerUser,
   unfollowPeerUser,
   fetchSuggestedPeers,
+  resolveAvatarUrl,
   formatRelativeTime
 } from "@/lib/social-feed";
+import UserAvatar from "@/components/UserAvatar";
+import { subscribeOnlineUserCount, OnlineMetrics, BASELINE_ONLINE_COUNT } from "@/lib/presence";
 import { formatCapsules } from "@/lib/capsules";
 import { TRENDING_TOPICS, COMMUNITY_CHANNELS, SITE_CONFIG } from "@/lib/constants";
 import {
@@ -77,6 +83,20 @@ function FeedPageContent() {
   const [savedPostIds, setSavedPostIds] = useState<Set<string>>(new Set());
   const [followingUids, setFollowingUids] = useState<Set<string>>(new Set());
   const [suggestedPeers, setSuggestedPeers] = useState<SuggestedPeer[]>([]);
+  const [followingList, setFollowingList] = useState<FollowUserItem[]>([]);
+  const [followersList, setFollowersList] = useState<FollowUserItem[]>([]);
+
+  // Real-time online community metrics (1,850 baseline + verified active users)
+  const [onlineMetrics, setOnlineMetrics] = useState<OnlineMetrics>({
+    displayedCount: BASELINE_ONLINE_COUNT,
+    verifiedLiveCount: 0,
+    baselineCount: BASELINE_ONLINE_COUNT,
+    calculationLabel: "1,850 baseline community scholars"
+  });
+
+  // Connections modal state
+  const [showConnectionsModal, setShowConnectionsModal] = useState(false);
+  const [connectionsModalTab, setConnectionsModalTab] = useState<"following" | "followers">("following");
 
   // Filter & Navigation state
   const [activeTab, setActiveTab] = useState<FilterTab>("ALL");
@@ -147,6 +167,9 @@ function FeedPageContent() {
     const unsubscribeLikes = subscribeUserLikes(user.uid, setLikedPostIds);
     const unsubscribeBookmarks = subscribeUserBookmarks(user.uid, setSavedPostIds);
     const unsubscribeFollowing = subscribeUserFollowing(user.uid, setFollowingUids);
+    const unsubscribeFollowingList = subscribeFollowingList(user.uid, setFollowingList);
+    const unsubscribeFollowersList = subscribeFollowersList(user.uid, setFollowersList);
+    const unsubscribeMetrics = subscribeOnlineUserCount(setOnlineMetrics);
 
     fetchSuggestedPeers(user.uid).then(setSuggestedPeers);
 
@@ -155,6 +178,9 @@ function FeedPageContent() {
       unsubscribeLikes();
       unsubscribeBookmarks();
       unsubscribeFollowing();
+      unsubscribeFollowingList();
+      unsubscribeFollowersList();
+      unsubscribeMetrics();
     };
   }, [user]);
 
@@ -561,26 +587,14 @@ function FeedPageContent() {
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-rose-500/10 blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
               
               <div className="flex items-center gap-3.5 mb-3.5">
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-500 to-purple-600 p-0.5 shadow-md shadow-rose-500/20">
-                    <div className="w-full h-full rounded-[14px] overflow-hidden bg-slate-950 flex items-center justify-center">
-                      {profile?.photoUrl || user?.photoURL ? (
-                        <Image
-                          src={profile?.photoUrl || user?.photoURL || ""}
-                          alt="Profile"
-                          width={48}
-                          height={48}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-lg font-black text-rose-400">
-                          {(profile?.fullName || user?.displayName || "P")[0].toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900"></div>
-                </div>
+                <UserAvatar
+                  src={resolveAvatarUrl(profile) || user?.photoURL}
+                  name={profile?.fullName || profile?.name || user?.displayName}
+                  userId={user?.uid}
+                  size="xl"
+                  isOnline={true}
+                  showOnlineBadge={true}
+                />
 
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -595,6 +609,42 @@ function FeedPageContent() {
                     {profile?.qualification || profile?.profession || "Pharmacy Scholar"}
                   </span>
                 </div>
+              </div>
+
+              {/* Connections (Following & Followers) Row */}
+              <div className="grid grid-cols-2 gap-2 mb-3 pt-2.5 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConnectionsModalTab("following");
+                    setShowConnectionsModal(true);
+                  }}
+                  className="flex flex-col items-center p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/40 hover:border-slate-600 transition-all text-center group/btn"
+                  title="View Following List"
+                >
+                  <span className="text-sm font-extrabold text-white group-hover/btn:text-rose-400 transition-colors">
+                    {followingList.length || followingUids.size}
+                  </span>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                    Following
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConnectionsModalTab("followers");
+                    setShowConnectionsModal(true);
+                  }}
+                  className="flex flex-col items-center p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/40 hover:border-slate-600 transition-all text-center group/btn"
+                  title="View Followers List"
+                >
+                  <span className="text-sm font-extrabold text-white group-hover/btn:text-rose-400 transition-colors">
+                    {followersList.length}
+                  </span>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                    Followers
+                  </span>
+                </button>
               </div>
 
               {/* Wallet pill */}
@@ -790,21 +840,14 @@ function FeedPageContent() {
             <div className="rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-xl p-4 shadow-xl shadow-black/40">
               {/* Trigger Input Row */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl overflow-hidden bg-slate-800 flex-shrink-0 border border-slate-700 flex items-center justify-center">
-                  {profile?.photoUrl || user?.photoURL ? (
-                    <Image
-                      src={profile?.photoUrl || user?.photoURL || ""}
-                      alt="Avatar"
-                      width={40}
-                      height={40}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-base font-bold text-rose-400">
-                      {(profile?.fullName || user?.displayName || "P")[0].toUpperCase()}
-                    </span>
-                  )}
-                </div>
+                <UserAvatar
+                  src={resolveAvatarUrl(profile) || user?.photoURL}
+                  name={profile?.fullName || user?.displayName}
+                  userId={user?.uid}
+                  size="lg"
+                  isOnline={true}
+                  showOnlineBadge={true}
+                />
 
                 <button
                   type="button"
@@ -1065,6 +1108,23 @@ function FeedPageContent() {
               )}
             </div>
 
+            {/* Live Community Counter & Quick Header */}
+            <div className="flex items-center justify-between gap-3 px-1">
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold shadow-sm"
+                title={onlineMetrics.calculationLabel}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>{onlineMetrics.displayedCount.toLocaleString()} Scholars Online</span>
+              </div>
+              <span className="text-[11px] text-slate-500 hidden sm:inline font-medium">
+                Baseline 1,850 + {onlineMetrics.verifiedLiveCount} live
+              </span>
+            </div>
+
             {/* Feed Filter Tabs */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
               {[
@@ -1156,22 +1216,14 @@ function FeedPageContent() {
                       {/* Post Header */}
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div className="flex items-center gap-3 min-w-0">
-                          {/* Author Avatar */}
-                          <div className="w-11 h-11 rounded-2xl overflow-hidden bg-slate-800 border border-slate-700/80 flex-shrink-0 flex items-center justify-center shadow-md">
-                            {post.userProfileImage ? (
-                              <Image
-                                src={post.userProfileImage}
-                                alt={post.userName}
-                                width={44}
-                                height={44}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-base font-bold text-rose-400">
-                                {post.userName[0]?.toUpperCase() || "P"}
-                              </span>
-                            )}
-                          </div>
+                          {/* Author Avatar with Real-time Online Indicator */}
+                          <UserAvatar
+                            src={post.userProfileImage}
+                            name={post.userName}
+                            userId={post.userId}
+                            size="lg"
+                            showOnlineBadge={true}
+                          />
 
                           {/* Author Info */}
                           <div className="flex flex-col min-w-0">
@@ -1431,19 +1483,13 @@ function FeedPageContent() {
                                   key={comment.commentId}
                                   className="flex items-start gap-2.5 p-2 rounded-2xl bg-slate-950/60 border border-slate-850"
                                 >
-                                  <div className="w-7 h-7 rounded-xl overflow-hidden bg-slate-800 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-300">
-                                    {comment.userProfileImage ? (
-                                      <Image
-                                        src={comment.userProfileImage}
-                                        alt={comment.userName}
-                                        width={28}
-                                        height={28}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      (comment.userName[0] || "P").toUpperCase()
-                                    )}
-                                  </div>
+                                  <UserAvatar
+                                    src={comment.userProfileImage}
+                                    name={comment.userName}
+                                    userId={comment.userId}
+                                    size="sm"
+                                    showOnlineBadge={true}
+                                  />
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
                                       <span className="text-xs font-bold text-slate-200">
@@ -1516,6 +1562,38 @@ function FeedPageContent() {
           {/* RIGHT SIDEBAR: Suggested Peers & App Promotion           */}
           {/* ======================================================== */}
           <aside className="hidden xl:flex flex-col gap-5 sticky top-24">
+            {/* Live Online Scholars Community Widget */}
+            <div className="p-4 rounded-3xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-xl shadow-black/40 relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                    Live Community
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-extrabold text-emerald-400">
+                  ACTIVE
+                </span>
+              </div>
+
+              <div className="flex items-baseline gap-2 mb-1.5">
+                <span className="text-3xl font-black text-white tracking-tight">
+                  {onlineMetrics.displayedCount.toLocaleString()}
+                </span>
+                <span className="text-xs font-medium text-slate-400">Scholars Online</span>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Baseline estimate of <strong className="text-slate-300">{onlineMetrics.baselineCount.toLocaleString()}</strong> community members +{" "}
+                <strong className="text-emerald-400">{onlineMetrics.verifiedLiveCount}</strong> live active now.
+              </p>
+            </div>
+
             {/* Suggested Pharmacy Peers */}
             <div className="p-4 rounded-3xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-xl shadow-black/40">
               <div className="flex items-center justify-between mb-3.5">
@@ -1534,19 +1612,13 @@ function FeedPageContent() {
                     return (
                       <div key={peer.uid} className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-9 h-9 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 flex-shrink-0 flex items-center justify-center font-bold text-xs text-slate-300">
-                            {peer.photoUrl ? (
-                              <Image
-                                src={peer.photoUrl}
-                                alt={peer.name}
-                                width={36}
-                                height={36}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              (peer.name[0] || "P").toUpperCase()
-                            )}
-                          </div>
+                          <UserAvatar
+                            src={peer.photoUrl}
+                            name={peer.name}
+                            userId={peer.uid}
+                            size="md"
+                            showOnlineBadge={true}
+                          />
                           <div className="flex flex-col min-w-0">
                             <span className="text-xs font-bold text-slate-200 truncate">{peer.name}</span>
                             <span className="text-[10px] text-slate-500 truncate">
@@ -1653,6 +1725,124 @@ function FeedPageContent() {
             className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
+        </div>
+      )}
+
+      {/* Connections (Followers & Following) Modal */}
+      {showConnectionsModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setShowConnectionsModal(false)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl overflow-hidden relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-rose-500" />
+                <h3 className="text-base font-extrabold text-white">Community Connections</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowConnectionsModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Segmented Tabs */}
+            <div className="flex p-1 bg-slate-800/80 rounded-2xl mb-4">
+              <button
+                type="button"
+                onClick={() => setConnectionsModalTab("following")}
+                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+                  connectionsModalTab === "following"
+                    ? "bg-rose-500 text-white shadow-md shadow-rose-500/25"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Following ({followingList.length || followingUids.size})
+              </button>
+              <button
+                type="button"
+                onClick={() => setConnectionsModalTab("followers")}
+                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+                  connectionsModalTab === "followers"
+                    ? "bg-rose-500 text-white shadow-md shadow-rose-500/25"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Followers ({followersList.length})
+              </button>
+            </div>
+
+            {/* List */}
+            <div className="max-h-[360px] overflow-y-auto no-scrollbar space-y-2.5 pr-1">
+              {(connectionsModalTab === "following" ? followingList : followersList).length === 0 ? (
+                <div className="text-center py-10 px-4 space-y-2">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-800/80 flex items-center justify-center text-slate-500 mx-auto">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <p className="text-xs text-slate-400 font-medium">
+                    {connectionsModalTab === "following"
+                      ? "You are not following any scholars yet. Browse Suggested Scholars to connect!"
+                      : "No followers yet. Publish clinical notes or MCQ tips to grow your peer network!"}
+                  </p>
+                </div>
+              ) : (
+                (connectionsModalTab === "following" ? followingList : followersList).map((item) => {
+                  const isFollowingThisItem = followingUids.has(item.userId);
+                  return (
+                    <div
+                      key={item.userId}
+                      className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700/80 transition-all"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <UserAvatar
+                          src={item.photoUrl}
+                          name={item.name}
+                          userId={item.userId}
+                          size="md"
+                          showOnlineBadge={true}
+                        />
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs font-bold text-white truncate">{item.name}</span>
+                          <span className="text-[10px] text-slate-400 truncate">
+                            {item.profession || "Pharmacy Scholar"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {user && item.userId !== user.uid && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleToggleFollowPeer({
+                              uid: item.userId,
+                              name: item.name,
+                              photoUrl: item.photoUrl,
+                              profession: item.profession || "Pharmacist",
+                              qualification: "B.Pharm",
+                              followersCount: 0
+                            })
+                          }
+                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                            isFollowingThisItem
+                              ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+                              : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 text-white shadow-sm"
+                          }`}
+                        >
+                          {isFollowingThisItem ? "Following" : "Follow"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
